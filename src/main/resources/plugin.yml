@@ -1,0 +1,29 @@
+name: ${project.artifactId}
+version: ${project.version}
+authors: [oshcon]
+website: http://doodcraft.net/
+main: net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin
+
+commands:
+  chisel:
+    description: Base command
+
+permissions:
+  chisel.*:
+    description: Grants all plugin permission nodes
+    default: OP
+  chisel.command.chisel:
+    description: Allows players to use /enderpads
+    default: OP
+  chisel.command.reload:
+    description: Allows players to use /enderpads reload
+    default: OP
+  chisel.command.give:
+    description: Spawns a chisel for the commandsender
+    default: OP
+  chisel.craft:
+    description: Allows the player to craft the chisel
+    default: true
+  chisel.use:
+    description: Allows the player to use the chisel
+    default: true
