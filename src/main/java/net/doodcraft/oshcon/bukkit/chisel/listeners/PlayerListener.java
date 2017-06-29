@@ -2,6 +2,7 @@ package net.doodcraft.oshcon.bukkit.chisel.listeners;
 
 import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
+import net.doodcraft.oshcon.bukkit.chisel.util.BlockHelper;
 import net.doodcraft.oshcon.bukkit.chisel.util.StaticMethods;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -48,39 +49,47 @@ public class PlayerListener implements Listener {
                     if (event.getClickedBlock() != null) {
                         Block block = event.getClickedBlock();
                         Material material = block.getType();
-                        if (StaticMethods.isModifiable(event.getPlayer(), block.getLocation(), material)) {
-                            block.setData(StaticMethods.alterData(block));
-                            try {
-                                if (Settings.playSoundUse) {
-                                    block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.75F, 2.0F);
-                                }
-                            } catch (Exception ex) {
-                                if (Settings.debug) {
-                                    ex.printStackTrace();
-                                }
+                        if (Settings.debug) {
+                            if (event.getPlayer().isSneaking()) {
+                                event.getPlayer().sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getState().getData().toString()));
+                            } else {
+                                event.getPlayer().sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getType().toString() + "~" + block.getData()));
                             }
-                            if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
-                                if (item.getAmount() > 1) {
-                                    int dropAmount = item.getAmount() - 1;
-                                    ItemStack dropStack = new ItemStack(item);
-                                    dropStack.setAmount(dropAmount);
-                                    item.setAmount(1);
-                                    event.getPlayer().getLocation().getWorld().dropItem(event.getPlayer().getLocation(), dropStack);
-                                }
-                                ItemMeta meta = item.getItemMeta();
-                                List<String> lore = meta.getLore();
-                                String[] durabilityString = lore.get(0).split("/");
-                                int durability = Integer.valueOf(durabilityString[0]);
-                                if (durability <= 1) {
-                                    event.getPlayer().getInventory().remove(item);
-                                    if (Settings.playSoundBreak) {
-                                        Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F),5L);
+                        }
+                        if (BlockHelper.isModifiable(event.getPlayer(), block.getLocation(), material)) {
+                            if (BlockHelper.alterData(block)) {
+                                if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                                    try {
+                                        if (Settings.playSoundUse) {
+                                            block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.75F, 2.0F);
+                                        }
+                                    } catch (Exception ex) {
+                                        if (Settings.debug) {
+                                            ex.printStackTrace();
+                                        }
                                     }
-                                } else {
-                                    lore.clear();
-                                    lore.add((durability - 1) + "/" + Settings.uses);
-                                    meta.setLore(lore);
-                                    item.setItemMeta(meta);
+                                    if (item.getAmount() > 1) {
+                                        int dropAmount = item.getAmount() - 1;
+                                        ItemStack dropStack = new ItemStack(item);
+                                        dropStack.setAmount(dropAmount);
+                                        item.setAmount(1);
+                                        event.getPlayer().getLocation().getWorld().dropItem(event.getPlayer().getLocation(), dropStack);
+                                    }
+                                    ItemMeta meta = item.getItemMeta();
+                                    List<String> lore = meta.getLore();
+                                    String[] durabilityString = lore.get(0).split("/");
+                                    int durability = Integer.valueOf(durabilityString[0]);
+                                    if (durability <= 1) {
+                                        event.getPlayer().getInventory().remove(item);
+                                        if (Settings.playSoundBreak) {
+                                            Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F),5L);
+                                        }
+                                    } else {
+                                        lore.clear();
+                                        lore.add((durability - 1) + "/" + Settings.uses);
+                                        meta.setLore(lore);
+                                        item.setItemMeta(meta);
+                                    }
                                 }
                             }
                         }

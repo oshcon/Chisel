@@ -2,10 +2,7 @@ package net.doodcraft.oshcon.bukkit.chisel.util;
 
 import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -26,8 +23,8 @@ public class StaticMethods {
         if (meta.hasDisplayName()) {
             if (meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
                 Map<Enchantment, Integer> enchs = item.getEnchantments();
-                if (enchs.containsKey(Enchantment.SILK_TOUCH)) {
-                    if (enchs.get(Enchantment.SILK_TOUCH) == 43) {
+                if (enchs.containsKey(Enchantment.ARROW_INFINITE)) {
+                    if (enchs.get(Enchantment.ARROW_INFINITE) == 42) {
                         meta.setDisplayName(addColor(Settings.chiselName));
                         item.setItemMeta(meta);
                         return true;
@@ -40,7 +37,7 @@ public class StaticMethods {
 
     public static ItemStack getChiselItem() {
         ItemStack chisel = new ItemStack(Material.STICK);
-        chisel.addUnsafeEnchantment(Enchantment.SILK_TOUCH, 43);
+        chisel.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 42);
         ItemMeta meta = chisel.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         meta.setDisplayName(StaticMethods.addColor(Settings.chiselName));
@@ -57,6 +54,7 @@ public class StaticMethods {
             BlockBreakEvent event = new BlockBreakEvent(block, player);
             Bukkit.getPluginManager().callEvent(event);
             if (event.isCancelled()) {
+                event.setCancelled(true);
                 return false;
             } else {
                 event.setCancelled(true);
@@ -64,85 +62,6 @@ public class StaticMethods {
             }
         }
         return true;
-    }
-
-    public static byte alterData(Block block) {
-        byte data = block.getData();
-        if (BlockHelper.isGlazedTerracotta(block.getType())) {
-            if (data < 3) {
-                return (byte) (data + 1);
-            } else {
-                return 0;
-            }
-        }
-        if (BlockHelper.isQuartzBlock(block.getType())) {
-            if (data < 4) {
-                return (byte) (data + 1);
-            } else {
-                return 0;
-            }
-        }
-        if (BlockHelper.isSandstone(block.getType())) {
-            if (data < 2) {
-                return (byte) (data + 1);
-            } else {
-                return 0;
-            }
-        }
-        if (BlockHelper.isStonebrick(block.getType())) {
-            if (data < 3) {
-                return (byte) (data + 1);
-            } else {
-                return 0;
-            }
-        }
-        return data;
-    }
-
-    public static boolean isModifiable(Player player, Location location, Material material) {
-        if (!hasPermission(player, "chisel.use")) {
-            return false;
-        }
-
-        if (canBuild(player, location)) {
-            if (BlockHelper.isStonebrick(material)) {
-                if (Settings.allowStone) {
-                    if (Settings.debug) {
-                        player.sendMessage(addColor(Settings.pluginPrefix + " &d[DEBUG] &a" + material.toString() + " is allowed."));
-                    }
-                    return true;
-                }
-            }
-            if (BlockHelper.isSandstone(material)) {
-                if (Settings.allowSandstone) {
-                    if (Settings.debug) {
-                        player.sendMessage(addColor(Settings.pluginPrefix + " &d[DEBUG] &a" + material.toString() + " is allowed."));
-                    }
-                    return true;
-                }
-            }
-            if (BlockHelper.isQuartzBlock(material)) {
-                if (Settings.allowQuartz) {
-                    if (Settings.debug) {
-                        player.sendMessage(addColor(Settings.pluginPrefix + " &d[DEBUG] &a" + material.toString() + " is allowed."));
-                    }
-                    return true;
-                }
-            }
-            if (BlockHelper.isGlazedTerracotta(material)) {
-                if (Settings.allowTerracotta) {
-                    if (Settings.debug) {
-                        player.sendMessage(addColor(Settings.pluginPrefix + " &d[DEBUG] &a" + material.toString() + " is allowed."));
-                    }
-                    return true;
-                }
-            }
-        }
-
-        if (Settings.debug) {
-            player.sendMessage(addColor(Settings.pluginPrefix + " &d[DEBUG] &c" + material.toString() + " is not allowed."));
-        }
-        return false;
     }
 
     public static Boolean hasPermission(Player player, String node) {

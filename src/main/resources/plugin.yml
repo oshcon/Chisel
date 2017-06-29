@@ -13,13 +13,13 @@ permissions:
     description: Grants all plugin permission nodes
     default: OP
   chisel.command.chisel:
-    description: Allows players to use /enderpads
+    description: Allows players to use /chisel
     default: OP
   chisel.command.reload:
-    description: Allows players to use /enderpads reload
+    description: Allows players to use /chisel reload
     default: OP
   chisel.command.give:
-    description: Spawns a chisel for the commandsender
+    description: Allows players to use /chisel give
     default: OP
   chisel.craft:
     description: Allows the player to craft the chisel

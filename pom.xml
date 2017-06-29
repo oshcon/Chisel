@@ -6,7 +6,7 @@
 
     <groupId>net.doodcraft</groupId>
     <artifactId>Chisel</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.2</version>
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
@@ -98,11 +98,6 @@
             <artifactId>spigot-api</artifactId>
             <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.1</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>

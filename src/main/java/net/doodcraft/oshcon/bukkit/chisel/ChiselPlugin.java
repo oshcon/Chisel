@@ -2,6 +2,7 @@ package net.doodcraft.oshcon.bukkit.chisel;
 
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
 import net.doodcraft.oshcon.bukkit.chisel.listeners.PlayerListener;
+import net.doodcraft.oshcon.bukkit.chisel.util.BlockHelper;
 import net.doodcraft.oshcon.bukkit.chisel.util.StaticMethods;
 import org.bstats.Metrics;
 import org.bukkit.Bukkit;
@@ -31,8 +32,17 @@ public class ChiselPlugin extends JavaPlugin {
         NamespacedKey keySpace = new NamespacedKey(plugin, "CHISEL");
         chiselRecipe = new ShapelessRecipe(keySpace, chisel);
         chiselRecipe.addIngredient(1, Material.STICK);
-        chiselRecipe.addIngredient(1, Material.DIAMOND);
+        Material material = Material.valueOf(Settings.craftMaterial.toUpperCase());
+        try {
+            chiselRecipe.addIngredient(1, material);
+        } catch (Exception ex) {
+            StaticMethods.log("&cThere was an error adding " + Settings.craftMaterial.toUpperCase() + " to the recipe.");
+            StaticMethods.log("&cDefaulting to IRON_INGOT");
+            chiselRecipe.addIngredient(1, Material.IRON_INGOT);
+        }
         Bukkit.getServer().addRecipe(chiselRecipe);
+        BlockHelper.addMaxValues();
+        BlockHelper.addExceptionValues();
         long finish = System.currentTimeMillis();
         StaticMethods.log("&aChisel v" + plugin.getDescription().getVersion() + " is now loaded. &e(" + (finish - start) + "ms)");
     }
