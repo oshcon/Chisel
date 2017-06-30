@@ -50,6 +50,7 @@ public class BlockHelper {
     }
 
     public enum Stairs {
+        WOOD_STAIRS,
         SPRUCE_WOOD_STAIRS,
         SANDSTONE_STAIRS,
         NETHER_BRICK_STAIRS,
@@ -63,6 +64,11 @@ public class BlockHelper {
         DARK_OAK_STAIRS,
         RED_SANDSTONE_STAIRS,
         PURPUR_STAIRS;
+    }
+
+    public enum Pumpkins {
+        PUMPKIN,
+        JACK_O_LANTERN;
     }
 
     // get the possible data values for the valid blocks
@@ -103,6 +109,9 @@ public class BlockHelper {
         maxValues.put("DARK_OAK_STAIRS", (byte) 7);
         maxValues.put("RED_SANDSTONE_STAIRS", (byte) 7);
         maxValues.put("PURPUR_STAIRS", (byte) 7);
+        maxValues.put("END_ROD", (byte) 5);
+        maxValues.put("PUMPKIN", (byte) 3);
+        maxValues.put("JACK_O_LANTERN", (byte) 3);
     }
 
     public static void addExceptionValues() {
@@ -165,6 +174,23 @@ public class BlockHelper {
         return false;
     }
 
+    public static boolean isEndRod(Material material) {
+        return material.equals(Material.END_ROD);
+    }
+
+    public static boolean isPumpkin(Material material) {
+        for (Pumpkins value : Pumpkins.values()) {
+            if (material.toString().equals(value.name())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static Boolean isHayBale(Material material) {
+        return material.equals(Material.HAY_BLOCK);
+    }
+
     // check for modification permission
     public static boolean isModifiable(Player player, Location location, Material material) {
         if (!StaticMethods.hasPermission(player, "chisel.use")) {
@@ -202,6 +228,21 @@ public class BlockHelper {
         }
         if (BlockHelper.isStairBlock(material)) {
             if (Settings.allowStairs) {
+                return StaticMethods.canBuild(player, location);
+            }
+        }
+        if (BlockHelper.isEndRod(material)) {
+            if (Settings.allowEndRods) {
+                return StaticMethods.canBuild(player, location);
+            }
+        }
+        if (BlockHelper.isPumpkin(material)) {
+            if (Settings.allowPumpkins) {
+                return StaticMethods.canBuild(player, location);
+            }
+        }
+        if (BlockHelper.isHayBale(material)) {
+            if (Settings.allowHayBales) {
                 return StaticMethods.canBuild(player, location);
             }
         }
@@ -285,6 +326,17 @@ public class BlockHelper {
             }
             if (data == 11) {
                 block.setData((byte) 3);
+            }
+        }
+        if (isHayBale(block.getType())) {
+            if (data == 0) {
+                block.setData((byte) 4);
+            }
+            if (data == 4) {
+                block.setData((byte) 8);
+            }
+            if (data == 8) {
+                block.setData((byte) 0);
             }
         }
         return false;

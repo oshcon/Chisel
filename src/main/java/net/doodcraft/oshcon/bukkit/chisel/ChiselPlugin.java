@@ -8,6 +8,7 @@ import org.bstats.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapelessRecipe;
@@ -28,19 +29,7 @@ public class ChiselPlugin extends JavaPlugin {
         registerListeners();
         setExecutors();
         Settings.setupDefaults();
-        ItemStack chisel = StaticMethods.getChiselItem();
-        NamespacedKey keySpace = new NamespacedKey(plugin, "CHISEL");
-        chiselRecipe = new ShapelessRecipe(keySpace, chisel);
-        chiselRecipe.addIngredient(1, Material.STICK);
-        Material material = Material.valueOf(Settings.craftMaterial.toUpperCase());
-        try {
-            chiselRecipe.addIngredient(1, material);
-        } catch (Exception ex) {
-            StaticMethods.log("&cThere was an error adding " + Settings.craftMaterial.toUpperCase() + " to the recipe.");
-            StaticMethods.log("&cDefaulting to IRON_INGOT");
-            chiselRecipe.addIngredient(1, Material.IRON_INGOT);
-        }
-        Bukkit.getServer().addRecipe(chiselRecipe);
+        setupRecipe();
         BlockHelper.addMaxValues();
         BlockHelper.addExceptionValues();
         long finish = System.currentTimeMillis();
@@ -55,6 +44,46 @@ public class ChiselPlugin extends JavaPlugin {
         for (Listener listener : listeners) {
             Bukkit.getServer().getPluginManager().registerEvents(listener, plugin);
         }
+    }
+
+    public static void setupRecipe() {
+        Boolean reloadWarning = false;
+        if (chiselRecipe != null) {
+            if (chiselRecipe.getIngredientList() != null) {
+                for (ItemStack item : chiselRecipe.getIngredientList()) {
+                    if (!item.getType().toString().equals(Settings.craftMaterialHandle.toUpperCase())) {
+                        reloadWarning = true;
+                    }
+                    if (!item.getType().toString().equals(Settings.craftMaterialTip.toUpperCase())) {
+                        reloadWarning = true;
+                    }
+                }
+                if (!chiselRecipe.getResult().getType().toString().equals(Settings.chiselMaterial.toUpperCase())) {
+                    reloadWarning = true;
+                }
+            }
+        }
+        if (reloadWarning) {
+            StaticMethods.log("&eIf the chisel recipe has changed, it is strongly recommended to restart your server asap.");
+        }
+        ItemStack chisel = StaticMethods.getChiselItem();
+        // deprecated, find a way to use NamespacedKey soon.
+        chiselRecipe = new ShapelessRecipe(chisel);
+        for (ItemStack item : chiselRecipe.getIngredientList()) {
+            chiselRecipe.removeIngredient(1, item.getType());
+        }
+        Material handle = Material.valueOf(Settings.craftMaterialHandle.toUpperCase());
+        Material tip = Material.valueOf(Settings.craftMaterialTip.toUpperCase());
+        try {
+            chiselRecipe.addIngredient(1, handle);
+            chiselRecipe.addIngredient(1, tip);
+        } catch (Exception ex) {
+            StaticMethods.log("&cThere was an error setting the chisel recipe.");
+            StaticMethods.log("&cDefaulting to STICK (handle) and IRON_INGOT (tip)");
+            chiselRecipe.addIngredient(1, Material.STICK);
+            chiselRecipe.addIngredient(1, Material.IRON_INGOT);
+        }
+        Bukkit.getServer().addRecipe(chiselRecipe);
     }
 
     public void setExecutors() {

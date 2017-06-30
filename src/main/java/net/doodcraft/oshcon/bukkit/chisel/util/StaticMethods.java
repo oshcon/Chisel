@@ -36,7 +36,7 @@ public class StaticMethods {
     }
 
     public static ItemStack getChiselItem() {
-        ItemStack chisel = new ItemStack(Material.STICK);
+        ItemStack chisel = new ItemStack(Material.valueOf(Settings.chiselMaterial.toUpperCase()));
         chisel.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 42);
         ItemMeta meta = chisel.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
