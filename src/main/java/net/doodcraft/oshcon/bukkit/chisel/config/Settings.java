@@ -21,6 +21,7 @@ public class Settings {
     public static Boolean allowEndRods;
     public static Boolean allowPumpkins;
     public static Boolean allowHayBales;
+    public static Boolean allowBoneBlocks;
     public static String chiselName;
     public static Boolean playSoundUse;
     public static Boolean playSoundBreak;
@@ -47,6 +48,7 @@ public class Settings {
         allowEndRods = true;
         allowPumpkins = true;
         allowHayBales = true;
+        allowBoneBlocks = true;
         playSoundUse = true;
         playSoundBreak = true;
         uses = 64;
@@ -73,6 +75,7 @@ public class Settings {
         config.add("Allowed.ENDRODS", allowEndRods);
         config.add("Allowed.PUMPKINS", allowPumpkins);
         config.add("Allowed.HAYBALES", allowHayBales);
+        config.add("Allowed.BONEBLOCKS", allowBoneBlocks);
         config.add("Sounds.Use", playSoundUse);
         config.add("Sounds.Break", playSoundBreak);
         config.add("DefaultUses", uses);
@@ -102,6 +105,7 @@ public class Settings {
         allowEndRods = config.getBoolean("Allowed.ENDRODS");
         allowPumpkins = config.getBoolean("Allowed.PUMPKINS");
         allowHayBales = config.getBoolean("Allowed.HAYBALES");
+        allowBoneBlocks = config.getBoolean("Allowed.BONEBLOCKS");
         playSoundUse = config.getBoolean("Sounds.Use");
         playSoundBreak = config.getBoolean("Sounds.Break");
         uses = config.getInteger("DefaultUses");

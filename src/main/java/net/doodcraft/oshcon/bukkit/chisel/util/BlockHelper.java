@@ -117,10 +117,8 @@ public class BlockHelper {
     public static void addExceptionValues() {
         exceptionValues = new HashMap<>();
         exceptionValues.put("MONSTER_EGGS", new Integer[] {2,3,4,5});
-        // exceptions: LOG, LOG_2
     }
 
-    // compare block in question against the valid blocks
     public static boolean isGlazedTerracotta(Material material) {
         for (GlazedTerracotta value : GlazedTerracotta.values()) {
             if (material.toString().equals(value.name())) {
@@ -191,7 +189,10 @@ public class BlockHelper {
         return material.equals(Material.HAY_BLOCK);
     }
 
-    // check for modification permission
+    public static Boolean isBoneBlock(Material material) {
+        return material.equals(Material.BONE_BLOCK);
+    }
+
     public static boolean isModifiable(Player player, Location location, Material material) {
         if (!StaticMethods.hasPermission(player, "chisel.use")) {
             return false;
@@ -246,6 +247,11 @@ public class BlockHelper {
                 return StaticMethods.canBuild(player, location);
             }
         }
+        if (BlockHelper.isBoneBlock(material)) {
+            if (Settings.allowBoneBlocks) {
+                return StaticMethods.canBuild(player, location);
+            }
+        }
         return false;
     }
 
@@ -279,64 +285,68 @@ public class BlockHelper {
                 }
             }
         }
-        if (isPurpurBlock(block.getType())) {
+        if (isPurpurBlock(block.getType()) || isHayBale(block.getType()) || isBoneBlock(block.getType())) {
             if (data == 0) {
                 block.setData((byte) 4);
+                return true;
             }
             if (data == 4) {
                 block.setData((byte) 8);
+                return true;
             }
             if (data == 8) {
                 block.setData((byte) 0);
+                return true;
             }
         }
         if (isLogBlock(block.getType())) {
             if (data == 0) {
                 block.setData((byte) 4);
+                return true;
             }
             if (data == 1) {
                 block.setData((byte) 5);
+                return true;
             }
             if (data == 2) {
                 block.setData((byte) 6);
+                return true;
             }
             if (data == 3) {
                 block.setData((byte) 7);
+                return true;
             }
             if (data == 4) {
                 block.setData((byte) 8);
+                return true;
             }
             if (data == 5) {
                 block.setData((byte) 9);
+                return true;
             }
             if (data == 6) {
                 block.setData((byte) 10);
+                return true;
             }
             if (data == 7) {
                 block.setData((byte) 11);
+                return true;
             }
             if (data == 8) {
                 block.setData((byte) 0);
+                return true;
             }
             if (data == 9) {
                 block.setData((byte) 1);
+                return true;
             }
             if (data == 10) {
                 block.setData((byte) 2);
+                return true;
             }
             if (data == 11) {
                 block.setData((byte) 3);
-            }
-        }
-        if (isHayBale(block.getType())) {
-            if (data == 0) {
-                block.setData((byte) 4);
-            }
-            if (data == 4) {
-                block.setData((byte) 8);
-            }
-            if (data == 8) {
-                block.setData((byte) 0);
+                return true;
             }
         }
         return false;

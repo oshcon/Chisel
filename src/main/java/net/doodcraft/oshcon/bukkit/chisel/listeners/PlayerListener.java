@@ -131,9 +131,6 @@ public class PlayerListener implements Listener {
                         event.setCancelled(true);
                         ChiselUseEvent chiselEvent = new ChiselUseEvent(event.getPlayer(), item, block);
                         Bukkit.getPluginManager().callEvent(chiselEvent);
-                        if (chiselEvent.isCancelled()) {
-                            StaticMethods.debug("ChiselUseEvent was cancelled");
-                        }
                     }
                 }
             }
