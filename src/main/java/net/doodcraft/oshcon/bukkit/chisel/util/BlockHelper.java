@@ -17,7 +17,7 @@ public class BlockHelper {
     // group all the valid blocks
     public enum Log {
         LOG,
-        LOG_2;
+        LOG_2
     }
 
     public enum GlazedTerracotta {
@@ -36,17 +36,17 @@ public class BlockHelper {
         RED_GLAZED_TERRACOTTA,
         SILVER_GLAZED_TERRACOTTA,
         WHITE_GLAZED_TERRACOTTA,
-        YELLOW_GLAZED_TERRACOTTA;
+        YELLOW_GLAZED_TERRACOTTA
     }
 
     public enum Sandstone {
         SANDSTONE,
-        RED_SANDSTONE;
+        RED_SANDSTONE
     }
 
     public enum StoneBrick {
         SMOOTH_BRICK,
-        MONSTER_EGGS;
+        MONSTER_EGGS
     }
 
     public enum Stairs {
@@ -63,12 +63,12 @@ public class BlockHelper {
         ACACIA_STAIRS,
         DARK_OAK_STAIRS,
         RED_SANDSTONE_STAIRS,
-        PURPUR_STAIRS;
+        PURPUR_STAIRS
     }
 
     public enum Pumpkins {
         PUMPKIN,
-        JACK_O_LANTERN;
+        JACK_O_LANTERN
     }
 
     // get the possible data values for the valid blocks
@@ -147,11 +147,11 @@ public class BlockHelper {
     }
 
     public static boolean isQuartzBlock(Material material) {
-        return material.equals(Material.QUARTZ_BLOCK);
+        return material.equals(Material.valueOf("QUARTZ_BLOCK"));
     }
 
     public static boolean isPurpurBlock(Material material) {
-        return material.equals(Material.PURPUR_PILLAR);
+        return material.equals(Material.valueOf("PURPUR_PILLAR"));
     }
 
     public static boolean isLogBlock(Material material) {
@@ -173,7 +173,7 @@ public class BlockHelper {
     }
 
     public static boolean isEndRod(Material material) {
-        return material.equals(Material.END_ROD);
+        return material.equals(Material.valueOf("END_ROD"));
     }
 
     public static boolean isPumpkin(Material material) {
@@ -186,11 +186,11 @@ public class BlockHelper {
     }
 
     public static Boolean isHayBale(Material material) {
-        return material.equals(Material.HAY_BLOCK);
+        return material.equals(Material.valueOf("HAY_BLOCK"));
     }
 
     public static Boolean isBoneBlock(Material material) {
-        return material.equals(Material.BONE_BLOCK);
+        return material.equals(Material.valueOf("BONE_BLOCK"));
     }
 
     public static boolean isModifiable(Player player, Location location, Material material) {

@@ -4,6 +4,7 @@ import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
 import net.doodcraft.oshcon.bukkit.chisel.ChiselUseEvent;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
 import net.doodcraft.oshcon.bukkit.chisel.util.BlockHelper;
+import net.doodcraft.oshcon.bukkit.chisel.util.Compatibility;
 import net.doodcraft.oshcon.bukkit.chisel.util.StaticMethods;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -36,6 +37,7 @@ public class PlayerListener implements Listener {
             if (event.getPlayer().isSneaking()) {
                 event.getPlayer().sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getState().getData().toString()));
             } else {
+                //noinspection deprecation
                 event.getPlayer().sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getType().toString() + "~" + block.getData()));
             }
         }
@@ -43,13 +45,29 @@ public class PlayerListener implements Listener {
             item.setType(Material.valueOf(Settings.chiselMaterial));
             if (BlockHelper.alterData(block)) {
                 if (Settings.fakePlaceEvent) {
-                    BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), null, item, event.getPlayer(), true, EquipmentSlot.OFF_HAND);
-                    Bukkit.getPluginManager().callEvent(placeEvent);
+                    Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable(){
+                        @Override
+                        public void run() {
+                            try {
+                                BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), block, item, event.getPlayer(), true, EquipmentSlot.OFF_HAND);
+                                Bukkit.getPluginManager().callEvent(placeEvent);
+                            } catch (Exception ex) {
+                                // It's possible another plugin, such as Essentials, did not like this event, for whatever reason.
+                                if (Settings.debug) {
+                                    StaticMethods.log("&cThere was an error firing a fake BlockPlaceEvent. It is probably safe to ignore.");
+                                    ex.printStackTrace();
+                                    StaticMethods.log("&cThis error could have been produced by another plugin.");
+                                }
+                            }
+                        }
+                    },1L);
                 }
-                if (!event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
+                if (!event.getPlayer().getGameMode().equals(GameMode.valueOf("CREATIVE"))) {
                     try {
                         if (Settings.playSoundUse) {
-                            block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.75F, 2.0F);
+                            if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
+                                block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.75F, 2.0F);
+                            }
                         }
                     } catch (Exception ex) {
                         if (Settings.debug) {
@@ -71,7 +89,9 @@ public class PlayerListener implements Listener {
                         if (durability <= 1) {
                             event.getPlayer().getInventory().remove(item);
                             if (Settings.playSoundBreak) {
-                                Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F),5L);
+                                if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
+                                    Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F),5L);
+                                }
                             }
                         } else {
                             lore.clear();
@@ -90,7 +110,14 @@ public class PlayerListener implements Listener {
                         if (durability <= 1) {
                             event.getPlayer().getInventory().remove(item);
                             if (Settings.playSoundBreak) {
-                                Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F),5L);
+                                Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
+                                            block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F);
+                                        }
+                                    }
+                                },5L);
                             }
                         } else {
                             lore.clear();
@@ -117,10 +144,22 @@ public class PlayerListener implements Listener {
         }
     }
 
+    public boolean isOffHandClick(PlayerInteractEvent event) {
+        if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
+            return event.getHand().equals(EquipmentSlot.valueOf("OFF_HAND"));
+        } else {
+            try {
+                return event.getHand().equals(EquipmentSlot.valueOf("OFF_HAND"));
+            } catch (NoSuchMethodError ex) {
+                return false;
+            }
+        }
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onInteract(PlayerInteractEvent event) {
         if (event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-            if (event.getHand().equals(EquipmentSlot.OFF_HAND)) {
+            if (isOffHandClick(event)) {
                 return;
             }
             if (event.getItem() != null) {
@@ -128,9 +167,14 @@ public class PlayerListener implements Listener {
                 if (StaticMethods.isChiselItem(item)) {
                     if (event.getClickedBlock() != null) {
                         Block block = event.getClickedBlock();
-                        event.setCancelled(true);
                         ChiselUseEvent chiselEvent = new ChiselUseEvent(event.getPlayer(), item, block);
-                        Bukkit.getPluginManager().callEvent(chiselEvent);
+                        try {
+                            Bukkit.getPluginManager().callEvent(chiselEvent);
+                        } catch (Exception ex) {
+                            StaticMethods.log("&cThere was an error firing ChiselUseEvent:");
+                            ex.printStackTrace();
+                            StaticMethods.log("&cPlease report this to the plugin author, Dooder07.");
+                        }
                     }
                 }
             }
