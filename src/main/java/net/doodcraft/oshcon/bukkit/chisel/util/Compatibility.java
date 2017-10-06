@@ -13,8 +13,11 @@ public class Compatibility {
 
     public static void checkHooks() {
         hooked = new HashMap<>();
-        if (hookPlugin("NoCheatPlus", "3.15.0", "3.15.2")) {
+        if (hookPlugin("NoCheatPlus", "3.15.0", "3.15.2", true)) {
             StaticMethods.log("&bHooked into NoCheatPlus v" + getPlugin("NoCheatPlus").getDescription().getVersion() + "!");
+        }
+        if (hookPlugin("Spartan", "Build 160", "Build 164", false)) {
+            StaticMethods.log("&bHooked into Spartan v" + getPlugin("Spartan").getDescription().getVersion() + "!");
         }
     }
 
@@ -37,12 +40,15 @@ public class Compatibility {
         return hooked.get(name);
     }
 
-    public static boolean hookPlugin(String name, String min, String max) {
+    public static boolean hookPlugin(String name, String min, String max, Boolean warning) {
         Plugin hook = Bukkit.getPluginManager().getPlugin(name);
         if (hook != null) {
             String rawVersion = hook.getDescription().getVersion();
+
             String[] versionPart = rawVersion.split("\\-");
+
             String version = versionPart[0];
+
             if (isSupported(version, min, max)) {
                 if (!hooked.containsKey(name)) {
                     hooked.put(name, hook);
@@ -51,9 +57,11 @@ public class Compatibility {
                     return false;
                 }
             } else {
-                StaticMethods.log("&c" + name + " v" + version + " is unknown or unsupported.");
-                StaticMethods.log("&cAttempting to hook anyway. There may be errors.");
-                StaticMethods.log("&eTIP: &cUse any version from v" + min + " through v" + max + " for full compatibility.");
+                if (warning) {
+                    StaticMethods.log("&c" + name + " v" + version + " is unknown or unsupported.");
+                    StaticMethods.log("&cAttempting to hook anyway. There may be errors.");
+                    StaticMethods.log("&eTIP: &cUse any version from v" + min + " through v" + max + " for full compatibility.");
+                }
                 try {
                     if (!hooked.containsKey(name)) {
                         hooked.put(name, hook);

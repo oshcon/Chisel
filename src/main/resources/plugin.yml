@@ -1,7 +1,7 @@
 name: Chisel
-version: 0.1.6
+version: 0.1.7
 authors: [oshcon]
-softdepend: [NoCheatPlus]
+softdepend: [NoCheatPlus, Spartan]
 website: http://doodcraft.net/
 main: net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin
 

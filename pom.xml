@@ -115,5 +115,13 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/NoCheatPlus.jar</systemPath>
         </dependency>
+        <!-- SpartanAPI -->
+        <dependency>
+            <groupId>me.vagdedes</groupId>
+            <artifactId>Spartan</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Spartan.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>

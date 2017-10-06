@@ -22,6 +22,7 @@ import java.util.Map;
 public class StaticMethods {
 
     public static boolean isChiselItem(ItemStack item) {
+
         if (item != null) {
             if (item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
@@ -39,12 +40,15 @@ public class StaticMethods {
                 }
             }
         }
+
         return false;
     }
 
     public static ItemStack getChiselItem() {
+
         String material = Settings.chiselMaterial.toUpperCase();
         ItemStack chisel;
+
         try {
             chisel = new ItemStack(Material.valueOf(material));
         } catch (Exception ex) {

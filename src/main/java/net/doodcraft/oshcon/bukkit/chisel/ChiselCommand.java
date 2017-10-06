@@ -14,13 +14,16 @@ public class ChiselCommand implements CommandExecutor {
         if (label.equalsIgnoreCase("chisel")) {
             if (sender instanceof Player) {
                 Player player = (Player) sender;
+
                 if (!StaticMethods.hasPermission(player, "chisel.command.chisel")) {
                     return false;
                 }
+
                 if (args.length == 0) {
                     sendValidCommands(sender);
                     return true;
                 }
+
                 if (args[0].equalsIgnoreCase("reload")) {
                     if (!StaticMethods.hasPermission(player, "chisel.command.reload")) {
                         return false;
@@ -29,6 +32,7 @@ public class ChiselCommand implements CommandExecutor {
                     sendReloaded(error, sender);
                     return true;
                 }
+
                 if (args[0].equalsIgnoreCase("give")){
                     if (!StaticMethods.hasPermission(player, "chisel.command.give")) {
                         return false;
@@ -36,6 +40,7 @@ public class ChiselCommand implements CommandExecutor {
                     player.getLocation().getWorld().dropItem(player.getLocation(), StaticMethods.getChiselItem());
                     return true;
                 }
+
                 player.sendMessage(StaticMethods.addColor(Settings.pluginPrefix + "&cIncorrect subcommand."));
                 sendValidCommands(sender);
                 return false;
@@ -44,17 +49,20 @@ public class ChiselCommand implements CommandExecutor {
                     sendValidCommands(sender);
                     return true;
                 }
+
                 if (args[0].equalsIgnoreCase("reload")) {
                     boolean error = Settings.reload();
                     sendReloaded(error, sender);
                     return true;
                 }
+
                 if (args[0].equalsIgnoreCase("give")) {
                     StaticMethods.log("Only players can use this command.");
                     return true;
                 }
             }
         }
+
         return false;
     }
 

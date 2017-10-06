@@ -27,17 +27,23 @@ public class ChiselPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         long start = System.currentTimeMillis();
+
         version = Bukkit.getBukkitVersion().split("-")[0];
         plugin = this;
         metrics = new Metrics(this);
+
         registerListeners();
         setExecutors();
+
         Settings.setupDefaults();
-        setupRecipe();
         Compatibility.checkHooks();
         BlockHelper.addMaxValues();
         BlockHelper.addExceptionValues();
+
+        setupRecipe();
+
         long finish = System.currentTimeMillis();
+
         StaticMethods.log("&aChisel v" + plugin.getDescription().getVersion() + " is now loaded. &e(" + (finish - start) + "ms)");
     }
 
@@ -53,33 +59,43 @@ public class ChiselPlugin extends JavaPlugin {
 
     public static void setupRecipe() {
         Boolean reloadWarning = false;
+
         if (chiselRecipe != null) {
             if (chiselRecipe.getIngredientList() != null) {
                 List<String> check = new ArrayList<>();
+
                 for (ItemStack item : chiselRecipe.getIngredientList()) {
                     check.add(item.getType().toString());
                 }
+
                 if (!check.contains(Settings.craftMaterialHandle.toUpperCase())) {
                     reloadWarning = true;
                 }
+
                 if (!check.contains(Settings.craftMaterialTip.toUpperCase())) {
                     reloadWarning = true;
                 }
+
                 if (!chiselRecipe.getResult().getType().toString().equals(Settings.chiselMaterial.toUpperCase())) {
                     reloadWarning = true;
                 }
             }
         }
+
         if (reloadWarning) {
             StaticMethods.log("&cIf the recipe was changed, you should restart your server asap to remove the old recipe.");
         }
+
         ItemStack chisel = StaticMethods.getChiselItem();
         chiselRecipe = new ShapelessRecipe(chisel);
+
         for (ItemStack item : chiselRecipe.getIngredientList()) {
             chiselRecipe.removeIngredient(1, item.getType());
         }
+
         Material handle = Material.valueOf(Settings.craftMaterialHandle.toUpperCase());
         Material tip = Material.valueOf(Settings.craftMaterialTip.toUpperCase());
+
         try {
             chiselRecipe.addIngredient(1, handle);
             chiselRecipe.addIngredient(1, tip);
@@ -89,6 +105,7 @@ public class ChiselPlugin extends JavaPlugin {
             chiselRecipe.addIngredient(1, Material.STICK);
             chiselRecipe.addIngredient(1, Material.IRON_INGOT);
         }
+
         Bukkit.getServer().addRecipe(chiselRecipe);
     }
 

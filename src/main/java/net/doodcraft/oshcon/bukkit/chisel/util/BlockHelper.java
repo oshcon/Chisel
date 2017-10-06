@@ -116,7 +116,7 @@ public class BlockHelper {
 
     public static void addExceptionValues() {
         exceptionValues = new HashMap<>();
-        exceptionValues.put("MONSTER_EGGS", new Integer[] {2,3,4,5});
+        exceptionValues.put("MONSTER_EGGS", new Integer[] {2,3,4,5}); // Silverfish stone
     }
 
     public static boolean isGlazedTerracotta(Material material) {
@@ -197,61 +197,73 @@ public class BlockHelper {
         if (!StaticMethods.hasPermission(player, "chisel.use")) {
             return false;
         }
+
         if (BlockHelper.isStonebrick(material)) {
             if (Settings.allowStone) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isSandstone(material)) {
             if (Settings.allowSandstone) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isQuartzBlock(material)) {
             if (Settings.allowQuartz) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isGlazedTerracotta(material)) {
             if (Settings.allowTerracotta) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isPurpurBlock(material)) {
             if (Settings.allowPurpurPillar) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isLogBlock(material)) {
             if (Settings.allowLogs) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isStairBlock(material)) {
             if (Settings.allowStairs) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isEndRod(material)) {
             if (Settings.allowEndRods) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isPumpkin(material)) {
             if (Settings.allowPumpkins) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isHayBale(material)) {
             if (Settings.allowHayBales) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         if (BlockHelper.isBoneBlock(material)) {
             if (Settings.allowBoneBlocks) {
                 return StaticMethods.canBuild(player, location);
             }
         }
+
         return false;
     }
 
@@ -285,6 +297,7 @@ public class BlockHelper {
                 }
             }
         }
+
         if (isPurpurBlock(block.getType()) || isHayBale(block.getType()) || isBoneBlock(block.getType())) {
             if (data == 0) {
                 block.setData((byte) 4);
@@ -299,6 +312,7 @@ public class BlockHelper {
                 return true;
             }
         }
+
         if (isLogBlock(block.getType())) {
             if (data == 0) {
                 block.setData((byte) 4);
@@ -349,6 +363,7 @@ public class BlockHelper {
                 return true;
             }
         }
+
         return false;
     }
 

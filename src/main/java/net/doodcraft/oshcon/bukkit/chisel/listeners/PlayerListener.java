@@ -2,6 +2,8 @@ package net.doodcraft.oshcon.bukkit.chisel.listeners;
 
 import fr.neatmonster.nocheatplus.checks.CheckType;
 import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import me.vagdedes.spartan.api.API;
+import me.vagdedes.spartan.system.Enums;
 import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
 import net.doodcraft.oshcon.bukkit.chisel.ChiselUseEvent;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
@@ -26,6 +28,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class PlayerListener implements Listener {
@@ -49,17 +52,25 @@ public class PlayerListener implements Listener {
         }
 
         if (Compatibility.isHooked("NoCheatPlus")) {
+            StaticMethods.debug("Cancelling NCP detection for Chisel event.");
             NCPExemptionManager.exemptPermanently(player, CheckType.ALL);
             Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable() {
                 @Override
                 public void run() {
                     NCPExemptionManager.unexempt(player, CheckType.ALL);
                 }
-            }, 20L);
+            }, 1L);
+        }
+
+        if (Compatibility.isHooked("Spartan")) {
+            StaticMethods.debug("Cancelling Spartan detection for Chisel event.");
+            List<Enums.HackType> types = Arrays.asList(Enums.HackType.class.getEnumConstants());
+            for (Enums.HackType type : types) {
+                API.cancelCheck(player, type, 1);
+            }
         }
 
         if (BlockHelper.isModifiable(player, block.getLocation(), material)) {
-
             if (BlockHelper.alterData(block)) {
                 if (Settings.fakePlaceEvent) {
                     Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable(){
