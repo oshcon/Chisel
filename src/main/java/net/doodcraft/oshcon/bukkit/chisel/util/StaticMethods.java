@@ -22,16 +22,18 @@ import java.util.Map;
 public class StaticMethods {
 
     public static boolean isChiselItem(ItemStack item) {
-        if (item.hasItemMeta()) {
-            ItemMeta meta = item.getItemMeta();
-            if (meta.hasDisplayName()) {
-                if (meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
-                    Map<Enchantment, Integer> enchs = item.getEnchantments();
-                    if (enchs.containsKey(Enchantment.ARROW_INFINITE)) {
-                        if (enchs.get(Enchantment.ARROW_INFINITE) == 42) {
-                            meta.setDisplayName(addColor(Settings.chiselName));
-                            item.setItemMeta(meta);
-                            return true;
+        if (item != null) {
+            if (item.hasItemMeta()) {
+                ItemMeta meta = item.getItemMeta();
+                if (meta.hasDisplayName()) {
+                    if (meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
+                        Map<Enchantment, Integer> enchs = item.getEnchantments();
+                        if (enchs.containsKey(Enchantment.ARROW_INFINITE)) {
+                            if (enchs.get(Enchantment.ARROW_INFINITE) == 42) {
+                                meta.setDisplayName(addColor(Settings.chiselName));
+                                item.setItemMeta(meta);
+                                return true;
+                            }
                         }
                     }
                 }
