@@ -1,5 +1,7 @@
 package net.doodcraft.oshcon.bukkit.chisel.listeners;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
 import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
 import net.doodcraft.oshcon.bukkit.chisel.ChiselUseEvent;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
@@ -33,23 +35,38 @@ public class PlayerListener implements Listener {
         Block block = event.getBlock();
         ItemStack item = event.getChisel();
         Material material = block.getType();
+        Player player = event.getPlayer();
+
+        Long tStart = System.currentTimeMillis();
+
         if (Settings.debug) {
-            if (event.getPlayer().isSneaking()) {
-                event.getPlayer().sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getState().getData().toString()));
+            if (player.isSneaking()) {
+                player.sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getState().getData().toString()));
             } else {
                 //noinspection deprecation
-                event.getPlayer().sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getType().toString() + "~" + block.getData()));
+                player.sendMessage(StaticMethods.addColor(Settings.pluginPrefix + " &d[DEBUG] &e" + block.getType().toString() + "~" + block.getData()));
             }
         }
-        if (BlockHelper.isModifiable(event.getPlayer(), block.getLocation(), material)) {
-            item.setType(Material.valueOf(Settings.chiselMaterial));
+
+        if (Compatibility.isHooked("NoCheatPlus")) {
+            NCPExemptionManager.exemptPermanently(player, CheckType.ALL);
+            Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable() {
+                @Override
+                public void run() {
+                    NCPExemptionManager.unexempt(player, CheckType.ALL);
+                }
+            }, 20L);
+        }
+
+        if (BlockHelper.isModifiable(player, block.getLocation(), material)) {
+
             if (BlockHelper.alterData(block)) {
                 if (Settings.fakePlaceEvent) {
                     Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable(){
                         @Override
                         public void run() {
                             try {
-                                BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), block, item, event.getPlayer(), true, EquipmentSlot.OFF_HAND);
+                                BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), block, item, player, true, EquipmentSlot.HAND);
                                 Bukkit.getPluginManager().callEvent(placeEvent);
                             } catch (Exception ex) {
                                 // It's possible another plugin, such as Essentials, did not like this event, for whatever reason.
@@ -62,11 +79,11 @@ public class PlayerListener implements Listener {
                         }
                     },1L);
                 }
-                if (!event.getPlayer().getGameMode().equals(GameMode.valueOf("CREATIVE"))) {
+                if (!player.getGameMode().equals(GameMode.valueOf("CREATIVE"))) {
                     try {
                         if (Settings.playSoundUse) {
                             if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
-                                block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_LAND, 0.75F, 2.0F);
+                                block.getLocation().getWorld().playSound(block.getLocation(), Sound.BLOCK_ANVIL_USE, 0.75F, 1.8F);
                             }
                         }
                     } catch (Exception ex) {
@@ -79,7 +96,7 @@ public class PlayerListener implements Listener {
                         ItemStack dropStack = new ItemStack(item);
                         dropStack.setAmount(dropAmount);
                         item.setAmount(1);
-                        event.getPlayer().getLocation().getWorld().dropItem(event.getPlayer().getLocation(), dropStack);
+                        player.getLocation().getWorld().dropItem(player.getLocation(), dropStack);
                     }
                     ItemMeta meta = item.getItemMeta();
                     if (meta.hasLore()) {
@@ -87,7 +104,7 @@ public class PlayerListener implements Listener {
                         String[] durabilityString = lore.get(0).split("/");
                         int durability = Integer.valueOf(durabilityString[0]);
                         if (durability <= 1) {
-                            event.getPlayer().getInventory().remove(item);
+                            player.getInventory().remove(item);
                             if (Settings.playSoundBreak) {
                                 if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
                                     Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F),5L);
@@ -108,7 +125,7 @@ public class PlayerListener implements Listener {
                         String[] durabilityString = lore.get(0).split("/");
                         int durability = Integer.valueOf(durabilityString[0]);
                         if (durability <= 1) {
-                            event.getPlayer().getInventory().remove(item);
+                            player.getInventory().remove(item);
                             if (Settings.playSoundBreak) {
                                 Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable() {
                                     @Override
@@ -128,6 +145,11 @@ public class PlayerListener implements Listener {
                     }
                 }
             }
+        }
+
+        if (Settings.debug) {
+            Long tEnd = System.currentTimeMillis();
+            StaticMethods.debug("[Benchmark] Chisel use benchmark: " + (tEnd - tStart) + "ms");
         }
     }
 

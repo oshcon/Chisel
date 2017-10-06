@@ -13,6 +13,9 @@ public class Compatibility {
 
     public static void checkHooks() {
         hooked = new HashMap<>();
+        if (hookPlugin("NoCheatPlus", "3.15.0", "3.15.2")) {
+            StaticMethods.log("&bHooked into NoCheatPlus v" + getPlugin("NoCheatPlus").getDescription().getVersion() + "!");
+        }
     }
 
     public static boolean isHooked(String name) {
@@ -50,6 +53,7 @@ public class Compatibility {
             } else {
                 StaticMethods.log("&c" + name + " v" + version + " is unknown or unsupported.");
                 StaticMethods.log("&cAttempting to hook anyway. There may be errors.");
+                StaticMethods.log("&eTIP: &cUse any version from v" + min + " through v" + max + " for full compatibility.");
                 try {
                     if (!hooked.containsKey(name)) {
                         hooked.put(name, hook);

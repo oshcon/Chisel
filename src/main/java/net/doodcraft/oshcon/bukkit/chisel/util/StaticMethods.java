@@ -2,7 +2,10 @@ package net.doodcraft.oshcon.bukkit.chisel.util;
 
 import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -19,15 +22,17 @@ import java.util.Map;
 public class StaticMethods {
 
     public static boolean isChiselItem(ItemStack item) {
-        ItemMeta meta = item.getItemMeta();
-        if (meta.hasDisplayName()) {
-            if (meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
-                Map<Enchantment, Integer> enchs = item.getEnchantments();
-                if (enchs.containsKey(Enchantment.ARROW_INFINITE)) {
-                    if (enchs.get(Enchantment.ARROW_INFINITE) == 42) {
-                        meta.setDisplayName(addColor(Settings.chiselName));
-                        item.setItemMeta(meta);
-                        return true;
+        if (item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
+            if (meta.hasDisplayName()) {
+                if (meta.hasItemFlag(ItemFlag.HIDE_ENCHANTS)) {
+                    Map<Enchantment, Integer> enchs = item.getEnchantments();
+                    if (enchs.containsKey(Enchantment.ARROW_INFINITE)) {
+                        if (enchs.get(Enchantment.ARROW_INFINITE) == 42) {
+                            meta.setDisplayName(addColor(Settings.chiselName));
+                            item.setItemMeta(meta);
+                            return true;
+                        }
                     }
                 }
             }
@@ -36,7 +41,17 @@ public class StaticMethods {
     }
 
     public static ItemStack getChiselItem() {
-        ItemStack chisel = new ItemStack(Material.valueOf(Settings.chiselMaterial.toUpperCase()));
+        String material = Settings.chiselMaterial.toUpperCase();
+        ItemStack chisel;
+        try {
+            chisel = new ItemStack(Material.valueOf(material));
+        } catch (Exception ex) {
+            StaticMethods.log("&cThere was an error setting the material value of the Chisel.");
+            StaticMethods.log("&c" + material + " may be invalid. Check your configuration.");
+            StaticMethods.log("&cDefaulting to STICK for now.");
+            chisel = new ItemStack(Material.valueOf("STICK"));
+        }
+
         chisel.addUnsafeEnchantment(Enchantment.ARROW_INFINITE, 42);
         ItemMeta meta = chisel.getItemMeta();
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);

@@ -3,6 +3,7 @@ package net.doodcraft.oshcon.bukkit.chisel;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
 import net.doodcraft.oshcon.bukkit.chisel.listeners.PlayerListener;
 import net.doodcraft.oshcon.bukkit.chisel.util.BlockHelper;
+import net.doodcraft.oshcon.bukkit.chisel.util.Compatibility;
 import net.doodcraft.oshcon.bukkit.chisel.util.StaticMethods;
 import org.bstats.Metrics;
 import org.bukkit.Bukkit;
@@ -33,6 +34,7 @@ public class ChiselPlugin extends JavaPlugin {
         setExecutors();
         Settings.setupDefaults();
         setupRecipe();
+        Compatibility.checkHooks();
         BlockHelper.addMaxValues();
         BlockHelper.addExceptionValues();
         long finish = System.currentTimeMillis();
@@ -69,7 +71,7 @@ public class ChiselPlugin extends JavaPlugin {
             }
         }
         if (reloadWarning) {
-            StaticMethods.log("&cThe recipe was changed. You should restart your server asap to remove the old recipe.");
+            StaticMethods.log("&cIf the recipe was changed, you should restart your server asap to remove the old recipe.");
         }
         ItemStack chisel = StaticMethods.getChiselItem();
         chiselRecipe = new ShapelessRecipe(chisel);

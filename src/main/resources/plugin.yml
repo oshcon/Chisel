@@ -1,6 +1,7 @@
-name: ${project.artifactId}
-version: ${project.version}
+name: Chisel
+version: 0.1.6
 authors: [oshcon]
+softdepend: [NoCheatPlus]
 website: http://doodcraft.net/
 main: net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin
 

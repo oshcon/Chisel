@@ -6,7 +6,7 @@
 
     <groupId>net.doodcraft</groupId>
     <artifactId>Chisel</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.6</version>
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
@@ -87,22 +87,33 @@
     </repositories>
 
     <dependencies>
+        <!-- BukkitAPI -->
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>bukkit</artifactId>
             <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!-- SpigotAPI -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
             <version>1.12-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!-- bStats -->
         <dependency>
             <groupId>org.bstats</groupId>
             <artifactId>bstats-bukkit</artifactId>
             <version>1.1</version>
+        </dependency>
+        <!-- NoCheatPlus -->
+        <dependency>
+            <groupId>fr.neatmonster</groupId>
+            <artifactId>NoCheatPlus</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/NoCheatPlus.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
