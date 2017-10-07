@@ -1,4 +1,4 @@
-package net.doodcraft.oshcon.bukkit.chisel;
+package net.doodcraft.oshcon.bukkit.chisel.commands;
 
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
 import net.doodcraft.oshcon.bukkit.chisel.util.StaticMethods;

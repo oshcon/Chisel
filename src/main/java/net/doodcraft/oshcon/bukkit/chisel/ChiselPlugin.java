@@ -1,6 +1,9 @@
 package net.doodcraft.oshcon.bukkit.chisel;
 
+import net.doodcraft.oshcon.bukkit.chisel.commands.ChiselCommand;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
+import net.doodcraft.oshcon.bukkit.chisel.listeners.AACListener;
+import net.doodcraft.oshcon.bukkit.chisel.listeners.DakataListener;
 import net.doodcraft.oshcon.bukkit.chisel.listeners.PlayerListener;
 import net.doodcraft.oshcon.bukkit.chisel.util.BlockHelper;
 import net.doodcraft.oshcon.bukkit.chisel.util.Compatibility;
@@ -32,15 +35,14 @@ public class ChiselPlugin extends JavaPlugin {
         plugin = this;
         metrics = new Metrics(this);
 
-        registerListeners();
-        setExecutors();
-
         Settings.setupDefaults();
         Compatibility.checkHooks();
         BlockHelper.addMaxValues();
         BlockHelper.addExceptionValues();
 
         setupRecipe();
+        registerListeners();
+        setExecutors();
 
         long finish = System.currentTimeMillis();
 
@@ -49,6 +51,12 @@ public class ChiselPlugin extends JavaPlugin {
 
     public void registerListeners() {
         registerEvents(plugin, new PlayerListener());
+        if (Compatibility.isHooked("AAC")) {
+            registerEvents(plugin, new AACListener());
+        }
+        if (Compatibility.isHooked("DakataAntiCheat")) {
+            registerEvents(plugin, new DakataListener());
+        }
     }
 
     public void registerEvents(Plugin plugin, Listener... listeners) {

@@ -6,7 +6,7 @@
 
     <groupId>net.doodcraft</groupId>
     <artifactId>Chisel</artifactId>
-    <version>0.1.7</version>
+    <version>0.1.8</version>
 
     <build>
         <finalName>${project.artifactId}-${project.version}</finalName>
@@ -122,6 +122,22 @@
             <version>LATEST</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/Spartan.jar</systemPath>
+        </dependency>
+        <!-- AAC -->
+        <dependency>
+            <groupId>me.konsolas</groupId>
+            <artifactId>AAC</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/AAC.jar</systemPath>
+        </dependency>
+        <!-- DakataAntiCheat -->
+        <dependency>
+            <groupId>DAKATA</groupId>
+            <artifactId>DakataAntiCheat</artifactId>
+            <version>LATEST</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Dakata.jar</systemPath>
         </dependency>
     </dependencies>
 </project>

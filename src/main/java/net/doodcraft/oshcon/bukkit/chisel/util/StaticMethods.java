@@ -1,7 +1,13 @@
 package net.doodcraft.oshcon.bukkit.chisel.util;
 
+import fr.neatmonster.nocheatplus.checks.CheckType;
+import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
+import me.konsolas.aac.api.AACAPIProvider;
+import me.vagdedes.spartan.api.API;
+import me.vagdedes.spartan.system.Enums;
 import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
+import net.doodcraft.oshcon.bukkit.chisel.listeners.AACListener;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -16,13 +22,33 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class StaticMethods {
 
-    public static boolean isChiselItem(ItemStack item) {
+    public static void exemptAnticheat(Player player) {
+        if (Compatibility.isHooked("NoCheatPlus")) {
+            StaticMethods.debug("Cancelling NCP hack detection for Chisel event.");
+            NCPExemptionManager.exemptPermanently(player, CheckType.ALL);
+            Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> NCPExemptionManager.unexempt(player, CheckType.ALL), 5L);
+        }
+        if (Compatibility.isHooked("Spartan")) {
+            StaticMethods.debug("Cancelling Spartan hack detection for Chisel event.");
+            List<Enums.HackType> types = Arrays.asList(Enums.HackType.class.getEnumConstants());
+            for (Enums.HackType type : types) {
+                API.cancelCheck(player, type, 5);
+            }
+        }
+        if (Compatibility.isHooked("AAC")) {
+            if (AACAPIProvider.isAPILoaded()) {
+                AACListener.lastAction.put(player, System.currentTimeMillis());
+            }
+        }
+    }
 
+    public static boolean isChiselItem(ItemStack item) {
         if (item != null) {
             if (item.hasItemMeta()) {
                 ItemMeta meta = item.getItemMeta();
@@ -40,12 +66,10 @@ public class StaticMethods {
                 }
             }
         }
-
         return false;
     }
 
     public static ItemStack getChiselItem() {
-
         String material = Settings.chiselMaterial.toUpperCase();
         ItemStack chisel;
 

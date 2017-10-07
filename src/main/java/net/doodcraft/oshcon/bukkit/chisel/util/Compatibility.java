@@ -19,6 +19,12 @@ public class Compatibility {
         if (hookPlugin("Spartan", "Build 160", "Build 164", false)) {
             StaticMethods.log("&bHooked into Spartan v" + getPlugin("Spartan").getDescription().getVersion() + "!");
         }
+        if (hookPlugin("AAC", "3.3.0", "3.3.3", true)) {
+            StaticMethods.log("&bHooked into AAC v" + getPlugin("AAC").getDescription().getVersion() + "!");
+        }
+        if (hookPlugin("DakataAntiCheat", "BETA 2.0", "BETA 2.0", false)) {
+            StaticMethods.log("&bHooked into DakataAntiCheat v" + getPlugin("DakataAntiCheat").getDescription().getVersion() + "!");
+        }
     }
 
     public static boolean isHooked(String name) {

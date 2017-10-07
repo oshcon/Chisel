@@ -1,4 +1,4 @@
-package net.doodcraft.oshcon.bukkit.chisel;
+package net.doodcraft.oshcon.bukkit.chisel.events;
 
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -32,14 +32,6 @@ public class ChiselUseEvent extends Event implements Cancellable {
 
     public Block getBlock() {
         return this.block;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    public void setBlock(Block block) {
-        this.block = block;
     }
 
     public boolean isCancelled() {

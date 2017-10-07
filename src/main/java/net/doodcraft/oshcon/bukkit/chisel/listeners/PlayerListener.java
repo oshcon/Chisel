@@ -1,12 +1,8 @@
 package net.doodcraft.oshcon.bukkit.chisel.listeners;
 
-import fr.neatmonster.nocheatplus.checks.CheckType;
-import fr.neatmonster.nocheatplus.hooks.NCPExemptionManager;
-import me.vagdedes.spartan.api.API;
-import me.vagdedes.spartan.system.Enums;
 import net.doodcraft.oshcon.bukkit.chisel.ChiselPlugin;
-import net.doodcraft.oshcon.bukkit.chisel.ChiselUseEvent;
 import net.doodcraft.oshcon.bukkit.chisel.config.Settings;
+import net.doodcraft.oshcon.bukkit.chisel.events.ChiselUseEvent;
 import net.doodcraft.oshcon.bukkit.chisel.util.BlockHelper;
 import net.doodcraft.oshcon.bukkit.chisel.util.Compatibility;
 import net.doodcraft.oshcon.bukkit.chisel.util.StaticMethods;
@@ -28,13 +24,18 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class PlayerListener implements Listener {
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler
     public void onUse(ChiselUseEvent event) {
+
+        if (event.isCancelled()) {
+            StaticMethods.debug("ChiselUseEvent was cancelled by another plugin.");
+            return;
+        }
+
         Block block = event.getBlock();
         ItemStack item = event.getChisel();
         Material material = block.getType();
@@ -51,41 +52,24 @@ public class PlayerListener implements Listener {
             }
         }
 
-        if (Compatibility.isHooked("NoCheatPlus")) {
-            StaticMethods.debug("Cancelling NCP detection for Chisel event.");
-            NCPExemptionManager.exemptPermanently(player, CheckType.ALL);
-            Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable() {
-                @Override
-                public void run() {
-                    NCPExemptionManager.unexempt(player, CheckType.ALL);
-                }
-            }, 1L);
-        }
-
-        if (Compatibility.isHooked("Spartan")) {
-            StaticMethods.debug("Cancelling Spartan detection for Chisel event.");
-            List<Enums.HackType> types = Arrays.asList(Enums.HackType.class.getEnumConstants());
-            for (Enums.HackType type : types) {
-                API.cancelCheck(player, type, 1);
-            }
-        }
+        StaticMethods.exemptAnticheat(player);
 
         if (BlockHelper.isModifiable(player, block.getLocation(), material)) {
             if (BlockHelper.alterData(block)) {
                 if (Settings.fakePlaceEvent) {
-                    Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable(){
-                        @Override
-                        public void run() {
-                            try {
-                                BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), block, item, player, true, EquipmentSlot.HAND);
-                                Bukkit.getPluginManager().callEvent(placeEvent);
-                            } catch (Exception ex) {
-                                // It's possible another plugin, such as Essentials, did not like this event, for whatever reason.
-                                if (Settings.debug) {
-                                    StaticMethods.log("&cThere was an error firing a fake BlockPlaceEvent. It is probably safe to ignore.");
-                                    ex.printStackTrace();
-                                    StaticMethods.log("&cThis error could have been produced by another plugin.");
-                                }
+                    Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> {
+                        try {
+                            BlockPlaceEvent placeEvent = new BlockPlaceEvent(block, block.getState(), block, item, player, true, EquipmentSlot.HAND);
+                            Bukkit.getPluginManager().callEvent(placeEvent);
+                            if (placeEvent.isCancelled()) {
+                                StaticMethods.log("Chisel BlockPlaceEvent was cancelled, possibly by an anticheat plugin.");
+                                StaticMethods.log("Report this to the plugin author to have this fixed.");
+                            }
+                        } catch (Exception ex) {
+                            if (Settings.debug) {
+                                StaticMethods.log("&cThere was an error firing a fake BlockPlaceEvent. It is probably safe to ignore.");
+                                ex.printStackTrace();
+                                StaticMethods.log("&cThis error could have been produced by another plugin.");
                             }
                         }
                     },1L);
@@ -138,12 +122,9 @@ public class PlayerListener implements Listener {
                         if (durability <= 1) {
                             player.getInventory().remove(item);
                             if (Settings.playSoundBreak) {
-                                Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
-                                            block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F);
-                                        }
+                                Bukkit.getScheduler().runTaskLater(ChiselPlugin.plugin, () -> {
+                                    if (Compatibility.isSupported(ChiselPlugin.version, "1.9", "2.0")) {
+                                        block.getLocation().getWorld().playSound(block.getLocation(), Sound.ENTITY_ITEM_BREAK, 1.0F, 1.2F);
                                     }
                                 },5L);
                             }
@@ -206,7 +187,7 @@ public class PlayerListener implements Listener {
                         } catch (Exception ex) {
                             StaticMethods.log("&cThere was an error firing ChiselUseEvent:");
                             ex.printStackTrace();
-                            StaticMethods.log("&cPlease report this to the plugin author, Dooder07.");
+                            StaticMethods.log("&cPlease report this to the plugin author.");
                         }
                     }
                 }
